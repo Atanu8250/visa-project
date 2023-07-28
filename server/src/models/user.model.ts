@@ -1,11 +1,6 @@
-import mongoose, { Document, ObjectId } from "mongoose";
+import mongoose from "mongoose";
 
-interface IUser extends Document {
-     name: String,
-     email: String,
-     password: String,
-     isAdmin: Boolean
-}
+import { IUser } from "../constants/constants";
 
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -21,11 +16,14 @@ const userSchema = new mongoose.Schema<IUser>({
      },
      password: {
           type: String,
-          min: [6, 'Password must contain more than 5 chars!'],
           required: true,
      },
      isAdmin: {
-          type: String,
+          type: Boolean,
+          default: false
+     },
+     isEmailVerified: {
+          type: Boolean,
           default: false
      }
 }, {
