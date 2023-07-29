@@ -10,6 +10,10 @@ dotenv.config();
 export const sendVeryMail = (payload: IMailVerfyParams): void => {
      const { recipientEmail } = payload;
      
+     console.log('host:',process.env.EMAIL_VERIFIER_HOST)
+     console.log('port:',process.env.EMAIL_VERIFIER_PORT)
+     console.log('auth user:',process.env.EMAIL_VERIFIER_AUTH_USER)
+     console.log('auth pwd:',process.env.EMAIL_VERIFIER_AUTH_PWD)
      try {
           const transporter: Transporter = nodemailer.createTransport({
                host: process.env.EMAIL_VERIFIER_HOST,
@@ -25,7 +29,7 @@ export const sendVeryMail = (payload: IMailVerfyParams): void => {
           const mailOptions: IMailOptions = {
                from: process.env.EMAIL_VERIFIER_AUTH_USER!,
                to: recipientEmail,
-               subject: 'For verification mail',
+               subject: 'For mail verification',
                html: EmailTemplate(payload)
           }
 
@@ -37,6 +41,6 @@ export const sendVeryMail = (payload: IMailVerfyParams): void => {
                }
           })
      } catch (error) {
-          console.log('Error in seding email:', error);
+          console.log('Error:', error);
      }
 }
