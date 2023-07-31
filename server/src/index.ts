@@ -1,9 +1,10 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response } from "express";
 import dotenv from 'dotenv';
 import cors from 'cors';
 
 import { router as authRouter } from './routes/auth.route';
 import { router as docRouter } from './routes/docs.route';
+import { authCheck } from './middlewares/authVerification.middleware';
 import connectDB from "./config/db";
 
 dotenv.config();
@@ -21,6 +22,8 @@ app.get("/", (req: Request, res: Response): void => {
 
 // Router for user's authentication
 app.use('/api/auth', authRouter)
+
+app.use(authCheck)
 
 // Router for Documents
 app.use('/api/docs', docRouter)

@@ -1,12 +1,12 @@
-import { NextFunction, Response } from "express";
+import { Request, NextFunction, Response } from "express";
 const jwt = require("jsonwebtoken");
 
-import { IAuthDecoded, ICustomReq } from "../constants/constants";
+import { IAuthDecoded } from "../@types/constants";
 const { UserModel } = require("../models/user.model");
 
 require("dotenv").config();
 
-const authCheck = async (req: ICustomReq, res: Response, next: NextFunction) => {
+export const authCheck = async (req: Request, res: Response, next: NextFunction) => {
      // Get the token from the headers
      const token = req.headers.authorization;
 
@@ -21,7 +21,7 @@ const authCheck = async (req: ICustomReq, res: Response, next: NextFunction) => 
           const matchedUser = await UserModel.findById(decoded.userId);
 
           if (matchedUser) {
-               req.headers.user = { userId: decoded.userId, isAdmin: decoded.isAdmin, isEmailVerified: decoded.isEmailVerified };
+               req.user = { userId: decoded.userId, isAdmin: decoded.isAdmin, isEmailVerified: decoded.isEmailVerified };
                next();
           } else {
                res.status(401).send({ message: "User doesn't exist!" });
@@ -31,5 +31,3 @@ const authCheck = async (req: ICustomReq, res: Response, next: NextFunction) => 
           res.status(500).send({ message: error.message, error })
      }
 }
-
-module.exports = authCheck;

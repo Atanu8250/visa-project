@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
 import { UserModel } from '../models/user.model';
-import { IUser, IVerifyMailReqQuery } from '../constants/constants';
+import { IUser, IVerifyMailReqQuery } from '../@types/constants';
 import { sendVerificationMail } from '../helpers/MailVerification';
 
 

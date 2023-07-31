@@ -2,7 +2,7 @@ import nodemailer, { Transporter } from 'nodemailer';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
-import { IMailOptions, IMailVerfyParams } from '../constants/constants';
+import { IMailOptions, IMailVerfyParams } from '../@types/constants';
 import { EmailTemplate } from './EmailTemplate';
 
 dotenv.config();
