@@ -1,4 +1,5 @@
 import nodemailer, { Transporter } from 'nodemailer';
+import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
 import { IMailOptions, IMailVerfyParams } from '../constants/constants';
@@ -7,14 +8,11 @@ import { EmailTemplate } from './EmailTemplate';
 dotenv.config();
 
 
-export const sendVeryMail = (payload: IMailVerfyParams): void => {
-     const { recipientEmail } = payload;
-     
-     console.log('host:',process.env.EMAIL_VERIFIER_HOST)
-     console.log('port:',process.env.EMAIL_VERIFIER_PORT)
-     console.log('auth user:',process.env.EMAIL_VERIFIER_AUTH_USER)
-     console.log('auth pwd:',process.env.EMAIL_VERIFIER_AUTH_PWD)
+export const sendVerificationMail = (payload: IMailVerfyParams): void => {
+     const { recipientEmail, recipientName, userId } = payload;
+
      try {
+          // create transporter for transporting Mail to the user
           const transporter: Transporter = nodemailer.createTransport({
                host: process.env.EMAIL_VERIFIER_HOST,
                port: +process.env.EMAIL_VERIFIER_PORT!,
@@ -26,11 +24,19 @@ export const sendVeryMail = (payload: IMailVerfyParams): void => {
                }
           });
 
+
+          // generate security token
+          const token = jwt.sign(
+               { userId },
+               process.env.JWT_MAIL_SERVICE_SECRET_KEY!,
+               { expiresIn: '1h' }
+          )
+
           const mailOptions: IMailOptions = {
                from: process.env.EMAIL_VERIFIER_AUTH_USER!,
                to: recipientEmail,
                subject: 'For mail verification',
-               html: EmailTemplate(payload)
+               html: EmailTemplate({ recipientEmail, recipientName, token })
           }
 
           transporter.sendMail(mailOptions, (err, info) => {

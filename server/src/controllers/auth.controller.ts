@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 import { UserModel } from '../models/user.model';
-import { IUser } from '../constants/constants';
-import { sendVeryMail } from '../helpers/MailVerification';
+import { IUser, IVerifyMailReqQuery } from '../constants/constants';
+import { sendVerificationMail } from '../helpers/MailVerification';
+
 
 
 export const signup = async (req: Request, res: Response) => {
@@ -33,7 +34,7 @@ export const signup = async (req: Request, res: Response) => {
           const user: IUser = await UserModel.create({ name, email, password: hash });
 
           // Send Email verification mail
-          sendVeryMail({ recipientName: user.name, recipientEmail: user.email, userId: user._id })
+          sendVerificationMail({ recipientName: user.name, recipientEmail: user.email, userId: user._id })
 
           return res.status(201).json({
                message: "User registered successfully, \nAn Email sent to your provided mail address, Please verify it before login!"
@@ -42,7 +43,7 @@ export const signup = async (req: Request, res: Response) => {
 
      } catch (error: any) {
           console.error('error:', error)
-          res.status(500).send({ "message": "Something went wrong", "error": error.message });
+          res.status(500).send({ "message": "Something went wrong", error: error.message });
      }
 };
 
@@ -75,7 +76,7 @@ export const login = async (req: Request, res: Response) => {
                // Generate authentication token
                const token = jwt.sign(
                     // Payloads, wants to access later for providing products
-                    { userId: user._id, isAdmin: user.isAdmin, isEmailVerfied: user.isEmailVerified },
+                    { userId: user._id, isAdmin: user.isAdmin, isEmailVerified: user.isEmailVerified },
                     process.env.JWT_SECRET_KEY!,
                     { expiresIn: process.env.JWT_EXPIRY_TIME ?? '3h' } // token/session expiry time
                );
@@ -92,7 +93,32 @@ export const login = async (req: Request, res: Response) => {
           });
      } catch (error: any) {
           console.error('error:', error);
-          res.status(500).send({ message: "Something went wrong", "error": error.message });
+          res.status(500).send({ message: "Something went wrong", error: error.message });
      }
 };
 
+
+export const verifyMail = async (req: Request<{}, {}, {}, IVerifyMailReqQuery>, res: Response) => {
+     const { token } = req.query;
+
+     if (!token) return res.status(400).send({ message: "Please provide the token!" })
+
+     try {
+          const decoded: any = jwt.verify(token, process.env.JWT_MAIL_SERVICE_SECRET_KEY!)
+          if (decoded) {
+               // decrypt the token and get the userId;
+               const { userId } = decoded;
+
+               // update the data in the DB
+               await UserModel.findByIdAndUpdate(userId, { isEmailVerified: true }, { runValidators: true });
+
+               return res.status(202).send({ message: 'Mail Verification successful.' });
+          }
+
+          // if we didn't get decoded value
+          res.status(498).send({ message: "Invalid Token!" });
+     } catch (error) {
+          console.error('error:', error)
+          res.status(500).send({ message: "Something went wrong", error: error});
+     }
+}
