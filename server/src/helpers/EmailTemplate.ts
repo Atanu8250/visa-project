@@ -1,4 +1,4 @@
-import { IEmailTemplate } from "../@types/constants";
+import type { IEmailTemplate } from "../@types/constants";
 
 export const EmailTemplate = ({ recipientName, recipientEmail, token }: IEmailTemplate): string => `<div style="margin:auto;">
           <h1 style="text-align: center">Verify Your Email Address</h1>

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-import { IDoc } from '../@types/constants';
+import type { IDoc } from '../@types/constants';
 
 
 const docSchema = new mongoose.Schema<IDoc>({

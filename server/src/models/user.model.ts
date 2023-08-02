@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import { IUser } from "../@types/constants";
+import type { IUser } from "../@types/constants";
 
 
 const userSchema = new mongoose.Schema<IUser>({

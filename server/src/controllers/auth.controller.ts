@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 import { UserModel } from '../models/user.model';
-import { IUser, IVerifyMailReqQuery } from '../@types/constants';
+import type { IUser, IVerifyMailReqQuery } from '../@types/constants';
 import { sendVerificationMail } from '../helpers/MailVerification';
 
 

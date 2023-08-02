@@ -1,20 +1,17 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+import { deleteDoc, getAllDocs, getSpecificDoc, postDoc, updateDoc } from '../controllers/doc.controller';
 
-
+// Created different router for Docs
 export const router = express.Router();
 
+// Routing methods for '/' end-point
 router.route('/')
-     .get((req: Request, res: Response) => {
-          res.send("Documents....");
-     })
-     .post((req: Request, res: Response) => {
-          res.send("Documents....");
-     })
+     .get(getAllDocs)
+     .post(postDoc)
 
+
+// Routing methods for '/:docId' end-point
 router.route('/:docId')
-     .patch((req: Request, res: Response) => {
-          res.send("Documents....");
-     })
-     .delete((req: Request, res: Response) => {
-          res.send("Documents....");
-     })
+     .get(getSpecificDoc)
+     .patch(updateDoc)
+     .delete(deleteDoc)
