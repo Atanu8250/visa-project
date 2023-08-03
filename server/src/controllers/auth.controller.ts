@@ -27,11 +27,11 @@ export const signup = async (req: Request, res: Response) => {
                return res.status(404).json({ message: "User already exists" });
           }
 
-          // Encrypt user's password
-          const hash = bcrypt.hashSync(password, +process.env.SALT_ROUND!);
+          // Hash user's password
+          const hashedPassword = bcrypt.hashSync(password, +process.env.SALT_ROUND!);
 
           // Create the user doc in the DB
-          const user: IUser = await UserModel.create({ name, email, password: hash });
+          const user: IUser = await UserModel.create({ name, email, password: hashedPassword });
 
           // Send Email verification mail
           sendVerificationMail({ recipientName: user.name, recipientEmail: user.email, userId: user._id })
@@ -43,7 +43,7 @@ export const signup = async (req: Request, res: Response) => {
 
      } catch (error: any) {
           console.error('error:', error)
-          res.status(500).send({ "message": "Something went wrong", error: error.message });
+          res.status(500).send({ message: error.message, error });
      }
 };
 
@@ -93,9 +93,35 @@ export const login = async (req: Request, res: Response) => {
           });
      } catch (error: any) {
           console.error('error:', error);
-          res.status(500).send({ message: "Something went wrong", error: error.message });
+          res.status(500).send({ message: error.message, error });
      }
 };
+
+
+export const sendVerifyMail = async (req: Request, res: Response) => {
+     const { email } = req.body;
+
+     if (!email) return res.status(400).send({ message: "Please provide email to get verification mail!" });
+
+     try {
+          // Find the user with the given email
+          const userWithGivenEmail: IUser | null = await UserModel.findOne({ email });
+
+          // If user doesn't exist with the provided email
+          if (!userWithGivenEmail) return res.status(404).send({ message: `User not found with email ${email}` });
+
+          // If the user's email is already verified
+          if (userWithGivenEmail.isEmailVerified) return res.status(200).send({ message: `This ${email} email address is already verified.` })
+
+          // send a verification mail
+          sendVerificationMail({ recipientEmail: userWithGivenEmail.email, recipientName: userWithGivenEmail.name, userId: userWithGivenEmail._id })
+
+          res.status(200).send({ message: `Verification mail send successfully to ${email}` });
+     } catch (error: any) {
+          console.log('error:', error)
+          res.status(500).send({ message: error.message, error })
+     }
+}
 
 
 export const verifyMail = async (req: Request<{}, {}, {}, IVerifyMailReqQuery>, res: Response) => {
@@ -117,8 +143,68 @@ export const verifyMail = async (req: Request<{}, {}, {}, IVerifyMailReqQuery>, 
 
           // if we didn't get decoded value
           res.status(498).send({ message: "Invalid Token!" });
-     } catch (error) {
+     } catch (error: any) {
           console.error('error:', error)
-          res.status(500).send({ message: "Something went wrong", error: error});
+          res.status(500).send({ message: error.message, error });
+     }
+}
+
+
+export const forgetPassword = async (req: Request, res: Response) => {
+     // Get email from the Request body
+     const { email } = req.body;
+
+     // If the email not send with the Request
+     if (!email) return res.status(400).send({ message: "Please provide email to reset your password!" });
+
+     try {
+          // Find the user with the given email
+          const userWithGivenEmail: IUser | null = await UserModel.findOne({ email });
+
+          // If user doesn't exist with the provided email
+          if (!userWithGivenEmail) return res.status(404).send({ message: `User not found with email ${email}` });
+
+          // If the user's email is already verified
+          if (!userWithGivenEmail.isEmailVerified) return res.status(200).send({ message: `This ${email} email address is not verified!` });
+
+          // send a verification mail
+          sendVerificationMail({ recipientEmail: userWithGivenEmail.email, recipientName: userWithGivenEmail.name, userId: userWithGivenEmail._id })
+
+          res.status(200).send({ message: "A mail is sent on this Email." })
+
+     } catch (error: any) {
+          console.log('error:', error)
+          res.status(500).send({ message: error.message, error })
+     }
+
+
+}
+
+
+export const resetPassword = async (req: Request, res: Response) => {
+     const { password, token } = req.body;
+
+     if (!token || !password) return res.status(400).send({ message: "Please provide the password!" })
+
+     try {
+          const decoded: any = jwt.verify(token, process.env.JWT_MAIL_SERVICE_SECRET_KEY!)
+          if (decoded) {
+               // decrypt the token and get the userId;
+               const { userId } = decoded;
+
+               // Hash user's password
+               const hashedPassword = bcrypt.hashSync(password, +process.env.SALT_ROUND!);
+
+               // update the password in the DB
+               await UserModel.findByIdAndUpdate(userId, { password: hashedPassword }, { runValidators: true });
+
+               return res.status(202).send({ message: 'Password reset successfully.' });
+          }
+
+          // if we didn't get decoded value
+          res.status(498).send({ message: "Invalid Token!" });
+     } catch (error: any) {
+          console.error('error:', error)
+          res.status(500).send({ message: error.message, error });
      }
 }

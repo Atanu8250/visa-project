@@ -42,11 +42,14 @@ export const sendVerificationMail = (payload: IMailVerfyParams): void => {
           transporter.sendMail(mailOptions, (err, info) => {
                if (err) {
                     console.error("Error in seding email:", err);
+                    // Throw error 
+                    throw Error(JSON.stringify(err))
                } else {
                     console.log("Email has been sent:-", info.response);
                }
           })
      } catch (error) {
           console.log('Error:', error);
+          throw Error(JSON.stringify(error));
      }
 }
