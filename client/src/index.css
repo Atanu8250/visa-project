@@ -6,4 +6,19 @@
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
+
+  --dark_bg: #093545;
+  --btn_color: #20df7f;
+
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+button{
+  font-weight: 600;
+  letter-spacing: 1px;
 }

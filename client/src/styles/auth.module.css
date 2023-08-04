@@ -1,0 +1,117 @@
+.container {
+     width: 100%;
+     height: 100vh;
+     background: var(--dark_bg) url("/wave_vector.svg") no-repeat bottom;
+     background-size: 100% auto;
+     background-attachment: fixed;
+     display: grid;
+     place-items: center;
+     position: relative;
+}
+
+.form {
+     width: 347px;
+}
+
+h2 {
+     font-family: Lexend Deca, sans-serif;
+     font-size: 64px;
+     font-weight: 400;
+     line-height: 80px;
+     letter-spacing: 0px;
+     text-align: center;
+     margin-bottom: 25px;
+     color: var(--light_bg)
+}
+
+p {
+     font-family: Lexend Deca, sans-serif;
+     font-size: 16px;
+     font-weight: 400;
+     line-height: 20px;
+     text-align: center;
+     color: var(--light_bg);
+     margin-bottom: 25px;
+}
+
+.btn,
+input {
+     width: 300px;
+     margin: 0 auto;
+     display: block;
+     border: none;
+     border-radius: 10px;
+     padding-left: 15px;
+     height: 45px;
+     /* border: ; */
+     outline: none;
+}
+
+label {
+     margin: 0 0 0 25px;
+     font-family: Montserrat, sans-serif;
+     font-size: 14px;
+     font-weight: 500;
+     line-height: 17px;
+     letter-spacing: 1px;
+     text-align: left;
+     cursor: pointer;
+     color: var(--light_bg);
+}
+
+
+.link {
+     cursor: pointer;
+     display: inline-block;
+     font-family: Montserrat, sans-serif;
+     font-size: 14px;
+     font-weight: 500;
+     line-height: 17px;
+     letter-spacing: 1px;
+     text-align: right;
+     text-decoration: none;
+     color: rgb(86, 128, 255);
+     margin-left: 32px;
+}
+
+.input {
+     background: #224957;
+     color: #fff;
+     font-size: 17px;
+}
+
+
+.input::placeholder {
+     font-size: 17px;
+     letter-spacing: 1px;
+}
+
+.input-grp {
+     margin: 1rem 0;
+     display: flex;
+     flex-direction: column;
+     gap: 0.50rem;
+}
+
+.input-pwd{
+     position: relative;
+}
+
+.input-pwd>svg{
+     cursor: pointer;
+     font-size: 17px;
+     position: absolute;
+     top: 50%;
+     right: 10%;
+     transform: translateY(-50%);
+}
+
+.btn {
+     font-family: Lexend Deca, sans-serif;
+     font-size: 16px;
+     line-height: 20px;
+     text-align: center;
+     background-color: var(--btn_color);
+     color: #000;
+     cursor: pointer;
+}
