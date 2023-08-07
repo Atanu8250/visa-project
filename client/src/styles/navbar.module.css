@@ -1,0 +1,29 @@
+header {
+     padding: 1rem 2rem;
+     background-color: var(--dark_bg);
+     position: sticky;
+     top: 0;
+     left: 0;
+     z-index: 10;
+}
+
+.logo {
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     gap: 1rem;
+     width: 15rem;
+}
+
+.logo img {
+     width: 100%;
+}
+
+.logo>div:first-child {
+     flex: 1;
+}
+
+.logo>h1 {
+     flex: 3;
+     white-space: nowrap;
+}
